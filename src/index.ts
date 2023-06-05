@@ -103,15 +103,6 @@ elem.getParent = elemGetParent;
 
 export { elem };
 
-function css<T extends Partial<CSSStyleDeclaration>>(
-  selector: string,
-  properties: T
-) {
-  var el = document.createElement("span");
-  setInlineStyle(el, properties);
-  return selector + " {" + el.style.cssText + "}";
-}
-
 let styleElement: HTMLStyleElement;
 export function style<T extends Partial<CSSStyleDeclaration>>(
   selector: string,
@@ -121,7 +112,11 @@ export function style<T extends Partial<CSSStyleDeclaration>>(
     styleElement = document.createElement("style");
     document.head.append(styleElement);
   }
-  styleElement.sheet?.insertRule(css(selector, properties));
+  if (!styleElement.sheet) throw new Error("Unable to add style rule.");
+  const index = styleElement.sheet.insertRule(selector + " {}");
+  const rule = styleElement.sheet.cssRules[index] as CSSStyleRule;
+  setInlineStyle(rule as any, properties);
+  return rule;
 }
 
 export function event<W extends HTMLElement, T extends EvTypes>(

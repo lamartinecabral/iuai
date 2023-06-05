@@ -93,19 +93,18 @@ function elemGetParent() {
 elem.get = elemGet;
 elem.getChild = elemGetChild;
 elem.getParent = elemGetParent;
-function css(selector, properties) {
-    var el = document.createElement("span");
-    setInlineStyle(el, properties);
-    return selector + " {" + el.style.cssText + "}";
-}
 var styleElement;
 function style(selector, properties) {
-    var _a;
     if (!styleElement) {
         styleElement = document.createElement("style");
         document.head.append(styleElement);
     }
-    (_a = styleElement.sheet) === null || _a === void 0 ? void 0 : _a.insertRule(css(selector, properties));
+    if (!styleElement.sheet)
+        throw new Error("Unable to add style rule.");
+    var index = styleElement.sheet.insertRule(selector + " {}");
+    var rule = styleElement.sheet.cssRules[index];
+    setInlineStyle(rule, properties);
+    return rule;
 }
 exports.style = style;
 function event(element, eventType, handler) {
