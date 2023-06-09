@@ -21,4 +21,4 @@ declare function elemGetParent<T extends Tags = "main">(id: string): Elem<T>;
 declare function elemGetParent<T extends Tags>(tag: T, id: string): Elem<T>;
 export { elem };
 export declare function style<T extends Partial<CSSStyleDeclaration>>(selector: string, properties: T): CSSStyleRule;
-export declare function event<W extends HTMLElement, T extends EvTypes>(element: W, eventType: T, handler: (ev: Ev<T>) => void): () => void;
+export declare function handle<W extends HTMLElement, T extends EvTypes>(element: W, eventType: T, handler: (ev: Ev<T>) => void): () => void;

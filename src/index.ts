@@ -119,7 +119,7 @@ export function style<T extends Partial<CSSStyleDeclaration>>(
   return rule;
 }
 
-export function event<W extends HTMLElement, T extends EvTypes>(
+export function handle<W extends HTMLElement, T extends EvTypes>(
   element: W,
   eventType: T,
   handler: (ev: Ev<T>) => void
