@@ -22,7 +22,7 @@ That's a good question. The thing is I want to build simple apps with pure javas
 In a browser:
 
 ```
-<script src="https://unpkg.com/iuai"></script>
+<script src="https://unpkg.com/iuai@0.2.0/iuai.js"></script>
 <script>
   const { elem, style, handle } = iuai;
 </script>
@@ -87,7 +87,7 @@ The code below...
 ... can be rewritten like this:
 
 ```html
-<body><script src="https://unpkg.com/iuai"></script><script>
+<body><script src="https://unpkg.com/iuai@0.2.0/iuai.js"></script><script>
   const { elem, style, handle } = iuai;
 
   style("#app", {
@@ -133,7 +133,7 @@ ps: It may look like it's not really less code, but the point is that it's **onl
 
 # Reference
 
-## `elem()`
+### `elem()`
 
 It abstracts the [`Document.createElement`](https://developer.mozilla.org/en-US/docs/Web/API/Document/createElement), [`Element.setAttribute`](https://developer.mozilla.org/en-US/docs/Web/API/Element/setAttribute) and [`Element.append`](https://developer.mozilla.org/en-US/docs/Web/API/Element/append) methods. It returns the element created.
 
@@ -148,7 +148,7 @@ function elem(tag: TagName, attributes: object, text: string): HTMLElementTagNam
 function elem(tag: TagName, attributes: object, children: Array<HTMLElement | string>): HTMLElementTagNameMap[typeof tag];
 ```
 
-## `elem.get()`
+### `elem.get()`
 
 Returns the element with the given `id`. You can also pass a `tag` for type checking purposes.
 
@@ -159,7 +159,7 @@ elem.get = function(id: string): HTMLElement;
 elem.get = function(tag: TagName, id: string): HTMLElementTagNameMap[typeof tag];
 ```
 
-## `elem.getChild()`
+### `elem.getChild()`
 
 Selects the element with the given `id` and returns it's first child. You can also pass a `tag` for type checking purposes.
 
@@ -170,7 +170,7 @@ elem.getChild = function(id: string): HTMLElement;
 elem.getChild = function(tag: TagName, id: string): HTMLElementTagNameMap[typeof tag];
 ```
 
-## `elem.getParent()`
+### `elem.getParent()`
 
 Selects the element with the given `id` and returns it's parent. You can also pass a `tag` for type checking purposes.
 
@@ -181,7 +181,7 @@ elem.getParent = function(id: string): HTMLElement;
 elem.getParent = function(tag: TagName, id: string): HTMLElementTagNameMap[typeof tag];
 ```
 
-## `style()`
+### `style()`
 
 It creates and returns a global [CSSRule](https://developer.mozilla.org/en-US/docs/Web/API/CSSRule) and abstracts the [`CSSStyleDeclaration.setProperty`](https://developer.mozilla.org/en-US/docs/Web/API/CSSStyleDeclaration/setProperty).
 
@@ -191,9 +191,9 @@ Signature:
 function style(selector: string, properties: Partial<CSSStyleDeclaration>): CSSStyleRule;
 ```
 
-## `handle()`
+### `handle()`
 
-It abstracts the [Element.addEventListener](https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener) method and returns an function that can be called to [remove the `EventListener`](https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/removeEventListener).
+It abstracts the [Element.addEventListener](https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener) method and returns a function that can be called to [remove the `EventListener`](https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/removeEventListener).
 
 Signature:
 
