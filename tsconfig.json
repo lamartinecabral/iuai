@@ -1,5 +1,7 @@
 {
+  "files": ["src/iuai.ts"],
   "compilerOptions": {
-    "declaration": true
+    "declaration": true,
+    "outDir": ""
   }
 }

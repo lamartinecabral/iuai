@@ -13,8 +13,8 @@
   ],
   "author": "lamartinecabral",
   "license": "ISC",
-  "main": "src/index.js",
-  "typings": "src/index.d.ts",
+  "main": "iuai.js",
+  "typings": "iuai.d.ts",
   "scripts": {
     "start": "webpack"
   },

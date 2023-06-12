@@ -2,7 +2,7 @@ const path = require("path");
 
 module.exports = {
   mode: "production",
-  entry: "./src/index.ts",
+  entry: "./src/iuai.ts",
   module: {
     rules: [
       {
@@ -13,8 +13,8 @@ module.exports = {
     ],
   },
   output: {
-    filename: "index.js",
-    path: path.resolve(__dirname, "src"),
+    filename: "iuai.js",
+    path: path.resolve(__dirname, ""),
     library: {
       name: "iuai",
       type: "umd",
