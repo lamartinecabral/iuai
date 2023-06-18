@@ -1,7 +1,8 @@
 type Tags = keyof HTMLElementTagNameMap;
 type Elem<T extends Tags> = HTMLElementTagNameMap[T];
-type EvTypes = keyof HTMLElementEventMap;
-type Ev<T extends EvTypes> = HTMLElementEventMap[T];
+type Attr<T extends Tags> = Partial<
+  Omit<Elem<T>, "style"> & { style: Partial<CSSStyleDeclaration> }
+>;
 
 function setInlineStyle<
   T extends HTMLElement,
@@ -23,78 +24,69 @@ function setAttribute<T extends HTMLElement>(
   else element.setAttribute(name, value);
 }
 
-function elem<T extends Tags>(tag: T): Elem<T>;
-function elem<T extends Tags>(tag: T, text: string): Elem<T>;
-function elem<T extends Tags>(tag: T, attributes: Partial<Elem<T>>): Elem<T>;
-function elem<T extends Tags, W extends HTMLElement | string>(
-  tag: T,
-  children: W[]
-): Elem<T>;
-function elem<T extends Tags>(
-  tag: T,
-  attributes: Partial<Elem<T>>,
-  text: string
-): Elem<T>;
-function elem<T extends Tags, W extends HTMLElement | string>(
-  tag: T,
-  attributes: Partial<Elem<T>>,
-  children: W[]
-): Elem<T>;
-function elem<T extends Tags, W extends HTMLElement | string>(...args) {
+function elemArgs<T extends Tags>(args: any[]) {
   const tag: T = args[0];
-  let attributes: Partial<Elem<T>> = {},
-    children: W[] = [];
+  let attributes: Attr<T> = {};
+  let children: Array<HTMLElement | string> = [];
   if (args[1]) {
-    if (typeof args[1] === "string") children = [args[1] as W];
+    if (typeof args[1] === "string") children = [args[1]];
     else if (Array.isArray(args[1])) children = args[1];
     else attributes = args[1];
   }
   if (args[2]) {
-    if (typeof args[2] === "string") children = [args[2] as W];
+    if (typeof args[2] === "string") children = [args[2]];
     else children = args[2];
   }
+  return [tag, attributes, children] as [
+    T,
+    Attr<T>,
+    Array<HTMLElement | string>
+  ];
+}
+
+function elem<T extends Tags>(tag: T): Elem<T>;
+function elem<T extends Tags>(tag: T, text: string): Elem<T>;
+function elem<T extends Tags>(tag: T, attributes: Attr<T>): Elem<T>;
+function elem<T extends Tags>(
+  tag: T,
+  children: Array<HTMLElement | string>
+): Elem<T>;
+function elem<T extends Tags>(
+  tag: T,
+  attributes: Attr<T>,
+  text: string
+): Elem<T>;
+function elem<T extends Tags>(
+  tag: T,
+  attributes: Attr<T>,
+  children: Array<HTMLElement | string>
+): Elem<T>;
+function elem(...args) {
+  const [tag, attributes, children] = elemArgs(args);
   const el = document.createElement(tag);
   for (const attr in attributes) setAttribute(el, attr, attributes[attr]);
   for (const child of children) el.append(child);
   return el;
 }
 
-function elemGetArgs<T extends Tags>(args: any[]) {
-  const [id, tag]: [string, T] = args.reverse() as any;
-  return [tag, id];
-}
-
-function checkElement<T extends Element>(el: T | null, tag?: string) {
+function assertElement<T extends Element>(el: T, tag?: string) {
   if (!el) throw new ReferenceError("Element not found.");
   if (tag && el.tagName.toLowerCase() != tag)
-    console.warn(
-      new TypeError("tag parameter and element's tag do not match.")
-    );
+    throw new TypeError("tag parameter and element's tag do not match.");
+  return el;
 }
 
-function elemGet<T extends Tags = "main">(id: string): Elem<T>;
-function elemGet<T extends Tags>(tag: T, id: string): Elem<T>;
-function elemGet<T extends Tags = "main">(...args) {
-  const [tag, id] = elemGetArgs<T>(args);
+function elemGet<T extends Tags = "main">(id: string, tag?: T) {
   const el = document.getElementById(id);
-  checkElement(el, tag);
-  return el as Elem<T>;
+  return assertElement(el, tag) as Elem<T>;
 }
-function elemGetChild<T extends Tags = "main">(id: string): Elem<T>;
-function elemGetChild<T extends Tags>(tag: T, id: string): Elem<T>;
-function elemGetChild<T extends Tags = "main">(...args) {
-  const [tag, id] = elemGetArgs<T>(args);
-  const el = document.getElementById(id)?.children[0] || null;
-  checkElement(el, tag);
-  return el as Elem<T>;
+function elemGetChild<T extends Tags = "main">(id: string, tag?: T) {
+  const el = document.getElementById(id)?.firstElementChild;
+  return assertElement(el, tag) as Elem<T>;
 }
-function elemGetParent<T extends Tags = "main">(id: string): Elem<T>;
-function elemGetParent<T extends Tags>(tag: T, id: string): Elem<T>;
-function elemGetParent<T extends Tags = "main">(...args) {
-  const [tag, id] = elemGetArgs<T>(args);
-  const el = document.getElementById(id)?.parentElement || null;
-  checkElement(el, tag);
-  return el as Elem<T>;
+function elemGetParent<T extends Tags = "main">(id: string, tag?: T) {
+  const el = document.getElementById(id)?.parentElement;
+  return assertElement(el, tag) as Elem<T>;
 }
 
 elem.get = elemGet;
@@ -117,13 +109,4 @@ export function style<T extends Partial<CSSStyleDeclaration>>(
   const rule = styleElement.sheet.cssRules[index] as CSSStyleRule;
   setInlineStyle(rule as any, properties);
   return rule;
-}
-
-export function handle<W extends HTMLElement, T extends EvTypes>(
-  element: W,
-  eventType: T,
-  handler: (ev: Ev<T>) => void
-) {
-  element.addEventListener(eventType, handler);
-  return () => element.removeEventListener(eventType, handler);
 }
