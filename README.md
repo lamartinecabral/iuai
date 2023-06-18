@@ -7,24 +7,20 @@
 
 # What is it?
 
-A really small set of utilities to build web interfaces using only pure javascript.
+A really small set of utilities to write `HTML` and `CSS` using only pure javascript.
 
-### "Why don't you use React, Angular, etc?"
+### But how?
 
-Most of them need transpilers. For simple web apps a browser ready lib would be nice.
-
-### "So why don't you use jQuery or something?"
-
-That's a good question. The thing is I want to build simple apps with pure javascript and only use my javascript knowledge. jQuery adds a layer of abstraction that requires jQuery knowledge. And I don't want/need that.
+It uses browser native APIs under the hood and get type checking and suggestions thanks to [`typescript`](https://github.com/microsoft/TypeScript/blob/main/src/lib/dom.generated.d.ts).
 
 # Installation
 
 In a browser:
 
 ```
-<script src="https://unpkg.com/iuai@0.2.0/iuai.js"></script>
+<script src="https://unpkg.com/iuai@0.3.0/iuai.js"></script>
 <script>
-  const { elem, style, handle } = iuai;
+  const { elem, style } = iuai;
 </script>
 ```
 
@@ -37,7 +33,7 @@ $ npm install iuai
 In Node.js:
 
 ```
-const { elem, style, handle } = require("iuai");
+const { elem, style } = require("iuai");
 ```
 
 # Usage example
@@ -87,8 +83,8 @@ The code below...
 ... can be rewritten like this:
 
 ```html
-<body><script src="https://unpkg.com/iuai@0.2.0/iuai.js"></script><script>
-  const { elem, style, handle } = iuai;
+<body><script src="https://unpkg.com/iuai@0.3.0/iuai.js"></script><script>
+  const { elem, style } = iuai;
 
   style("#app", {
     textAlign: "center",
@@ -106,30 +102,27 @@ The code below...
   document.body.append(
     elem("div", { id: "app" }, [
       elem("h1", "Hello World!"),
-      elem("button", { id: "clk" }, "click me"),
+      elem("button", { onclick: () => count() }, "click me"),
       elem("p", [
         " you clicked ",
         elem("span", { id: "counter" }, "0"),
         " times. ",
       ]),
-      elem("button", { id: "clr", disabled: true }, "reset"),
+      elem("button", { id: "clr", onclick: () => reset(), disabled: true }, "reset"),
     ])
   );
 
   let counter = +elem.get("counter").innerText;
-
-  handle(elem.get("clk"), "click", () => {
+  function count() {
     elem.get("counter").innerText = `${++counter}`;
     elem.get("clr").disabled = false;
-  });
-  handle(elem.get("clr"), "click", () => {
+  };
+  function reset() {
     elem.get("counter").innerText = `${(counter = 0)}`;
     elem.get("clr").disabled = true;
-  });
+  };
 </script></body>
 ```
-
-ps: It may look like it's not really less code, but the point is that it's **only pure javascript**.
 
 # Reference
 
@@ -155,8 +148,7 @@ Returns the element with the given `id`. You can also pass a `tag` for type chec
 Signature:
 
 ```typescript
-elem.get = function(id: string): HTMLElement;
-elem.get = function(tag: TagName, id: string): HTMLElementTagNameMap[typeof tag];
+elem.get = function(id: string, tag?: TagName): HTMLElementTagNameMap[typeof tag];
 ```
 
 ### `elem.getChild()`
@@ -166,8 +158,7 @@ Selects the element with the given `id` and returns it's first child. You can al
 Signature:
 
 ```typescript
-elem.getChild = function(id: string): HTMLElement;
-elem.getChild = function(tag: TagName, id: string): HTMLElementTagNameMap[typeof tag];
+elem.getChild = function(id: string, tag?: TagName): HTMLElementTagNameMap[typeof tag];
 ```
 
 ### `elem.getParent()`
@@ -177,8 +168,7 @@ Selects the element with the given `id` and returns it's parent. You can also pa
 Signature:
 
 ```typescript
-elem.getParent = function(id: string): HTMLElement;
-elem.getParent = function(tag: TagName, id: string): HTMLElementTagNameMap[typeof tag];
+elem.getParent = function(id: string, tag?: TagName): HTMLElementTagNameMap[typeof tag];
 ```
 
 ### `style()`
@@ -189,14 +179,4 @@ Signature:
 
 ```typescript
 function style(selector: string, properties: Partial<CSSStyleDeclaration>): CSSStyleRule;
-```
-
-### `handle()`
-
-It abstracts the [Element.addEventListener](https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener) method and returns a function that can be called to [remove the `EventListener`](https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/removeEventListener).
-
-Signature:
-
-```typescript
-function handle(element: HTMLElement, eventType: string, handler: Function): () => void;
 ```
