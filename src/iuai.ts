@@ -1,8 +1,8 @@
 type Tags = keyof HTMLElementTagNameMap;
 type Elem<T extends Tags> = HTMLElementTagNameMap[T];
-type Attr<T extends Tags> = Partial<
-  Omit<Elem<T>, "style"> & { style: Partial<CSSStyleDeclaration> }
->;
+type DeepPartial<T extends object> = {
+  [K in keyof T]?: T[K] extends object ? DeepPartial<T[K]> : T[K];
+};
 
 function setInlineStyle<
   T extends HTMLElement,
@@ -26,7 +26,7 @@ function setAttribute<T extends HTMLElement>(
 
 function elemArgs<T extends Tags>(args: any[]) {
   const tag: T = args[0];
-  let attributes: Attr<T> = {};
+  let attributes: DeepPartial<Elem<T>> = {};
   let children: Array<HTMLElement | string> = [];
   if (args[1]) {
     if (typeof args[1] === "string") children = [args[1]];
@@ -39,27 +39,30 @@ function elemArgs<T extends Tags>(args: any[]) {
   }
   return [tag, attributes, children] as [
     T,
-    Attr<T>,
+    DeepPartial<Elem<T>>,
     Array<HTMLElement | string>
   ];
 }
 
 function elem<T extends Tags>(tag: T): Elem<T>;
+function elem<T extends Tags>(
+  tag: T,
+  attributes: DeepPartial<Elem<T>>
+): Elem<T>;
+function elem<T extends Tags>(
+  tag: T,
+  attributes: DeepPartial<Elem<T>>,
+  children: Array<HTMLElement | string>
+): Elem<T>;
+function elem<T extends Tags>(
+  tag: T,
+  children: Array<HTMLElement | string>
+): Elem<T>;
 function elem<T extends Tags>(tag: T, text: string): Elem<T>;
-function elem<T extends Tags>(tag: T, attributes: Attr<T>): Elem<T>;
 function elem<T extends Tags>(
   tag: T,
-  children: Array<HTMLElement | string>
-): Elem<T>;
-function elem<T extends Tags>(
-  tag: T,
-  attributes: Attr<T>,
+  attributes: DeepPartial<Elem<T>>,
   text: string
-): Elem<T>;
-function elem<T extends Tags>(
-  tag: T,
-  attributes: Attr<T>,
-  children: Array<HTMLElement | string>
 ): Elem<T>;
 function elem(...args) {
   const [tag, attributes, children] = elemArgs(args);
