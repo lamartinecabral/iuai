@@ -18,7 +18,7 @@ It uses browser native APIs under the hood and get type checking and suggestions
 In a browser:
 
 ```
-<script src="https://unpkg.com/iuai@0.3.0/iuai.js"></script>
+<script src="https://unpkg.com/iuai/iuai.js"></script>
 <script>
   const { elem, style } = iuai;
 </script>
@@ -83,7 +83,7 @@ The code below...
 ... can be rewritten like this:
 
 ```html
-<body><script src="https://unpkg.com/iuai@0.3.0/iuai.js"></script><script>
+<body><script src="https://unpkg.com/iuai/iuai.js"></script><script>
   const { elem, style } = iuai;
 
   style("#app", {
