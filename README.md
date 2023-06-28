@@ -17,7 +17,7 @@ It uses browser native APIs under the hood and get type checking and suggestions
 
 In a browser:
 
-```
+```html
 <script src="https://unpkg.com/iuai/iuai.js"></script>
 <script>
   const { elem, style } = iuai;
@@ -26,13 +26,13 @@ In a browser:
 
 Using npm:
 
-```
+```sh
 $ npm install iuai
 ```
 
 In Node.js:
 
-```
+```javascript
 const { elem, style } = require("iuai");
 ```
 

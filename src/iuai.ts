@@ -3,6 +3,7 @@ type Elem<T extends Tags> = HTMLElementTagNameMap[T];
 type DeepPartial<T extends object> = {
   [K in keyof T]?: T[K] extends object ? DeepPartial<T[K]> : T[K];
 };
+type TagObj<T extends Tags> = { tag: T; id?: string };
 
 function setInlineStyle<
   T extends HTMLElement,
@@ -25,7 +26,8 @@ function setAttribute<T extends HTMLElement>(
 }
 
 function elemArgs<T extends Tags>(args: any[]) {
-  const tag: T = args[0];
+  const [tag, id]: [T, string] =
+    typeof args[0] === "string" ? [args[0], ""] : [args[0].tag, args[0].id];
   let attributes: DeepPartial<Elem<T>> = {};
   let children: Array<HTMLElement | string> = [];
   if (args[1]) {
@@ -37,6 +39,7 @@ function elemArgs<T extends Tags>(args: any[]) {
     if (typeof args[2] === "string") children = [args[2]];
     else children = args[2];
   }
+  if (id) attributes = { ...attributes, id };
   return [tag, attributes, children] as [
     T,
     DeepPartial<Elem<T>>,
@@ -44,23 +47,23 @@ function elemArgs<T extends Tags>(args: any[]) {
   ];
 }
 
-function elem<T extends Tags>(tag: T): Elem<T>;
+function elem<T extends Tags>(tag: T | TagObj<T>): Elem<T>;
 function elem<T extends Tags>(
-  tag: T,
+  tag: T | TagObj<T>,
   attributes: DeepPartial<Elem<T>>
 ): Elem<T>;
 function elem<T extends Tags>(
-  tag: T,
+  tag: T | TagObj<T>,
   attributes: DeepPartial<Elem<T>>,
   children: Array<HTMLElement | string>
 ): Elem<T>;
 function elem<T extends Tags>(
-  tag: T,
+  tag: T | TagObj<T>,
   children: Array<HTMLElement | string>
 ): Elem<T>;
-function elem<T extends Tags>(tag: T, text: string): Elem<T>;
+function elem<T extends Tags>(tag: T | TagObj<T>, text: string): Elem<T>;
 function elem<T extends Tags>(
-  tag: T,
+  tag: T | TagObj<T>,
   attributes: DeepPartial<Elem<T>>,
   text: string
 ): Elem<T>;
@@ -79,22 +82,42 @@ function assertElement<T extends Element>(el: T, tag?: string) {
   return el;
 }
 
-function elemGet<T extends Tags = "main">(id: string, tag?: T) {
+function elemGet<T extends Tags>(
+  id: string,
+  tag?: T
+): "main" extends T ? HTMLElement : Elem<T> {
   const el = document.getElementById(id);
-  return assertElement(el, tag) as Elem<T>;
+  return assertElement(el, tag) as any;
 }
-function elemGetChild<T extends Tags = "main">(id: string, tag?: T) {
+function elemGetChild<T extends Tags>(
+  id: string,
+  tag?: T
+): "main" extends T ? HTMLElement : Elem<T> {
   const el = document.getElementById(id)?.firstElementChild;
-  return assertElement(el, tag) as Elem<T>;
+  return assertElement(el, tag) as any;
 }
-function elemGetParent<T extends Tags = "main">(id: string, tag?: T) {
+function elemGetParent<T extends Tags>(
+  id: string,
+  tag?: T
+): "main" extends T ? HTMLElement : Elem<T> {
   const el = document.getElementById(id)?.parentElement;
-  return assertElement(el, tag) as Elem<T>;
+  return assertElement(el, tag) as any;
+}
+let count = 0;
+function elemRef<T extends Tags>(tag: T) {
+  const id = "e" + count++;
+  const ref = function () {
+    return elemGet(id, tag) as Elem<T>;
+  };
+  ref.id = id;
+  ref.tag = tag;
+  return ref;
 }
 
 elem.get = elemGet;
 elem.getChild = elemGetChild;
 elem.getParent = elemGetParent;
+elem.ref = elemRef;
 
 export { elem };
 
