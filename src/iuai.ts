@@ -4,11 +4,10 @@ type DeepPartial<T extends object> = {
   [K in keyof T]?: T[K] extends object ? DeepPartial<T[K]> : T[K];
 };
 type TagObj<T extends Tags> = { tag: T; id?: string };
+type Stringable = { toString(): string };
+type StyleProps = Partial<CSSStyleDeclaration> & { [property: string]: string };
 
-function setInlineStyle<
-  T extends HTMLElement,
-  W extends Partial<CSSStyleDeclaration>
->(element: T, style: W) {
+function setInlineStyle<T extends HTMLElement>(element: T, style: StyleProps) {
   for (const prop in style) {
     if (prop in element.style) element.style[prop] = style[prop] as string;
     else element.style.setProperty(prop, style[prop] as string);
@@ -82,6 +81,13 @@ function assertElement<T extends Element>(el: T, tag?: string) {
   return el;
 }
 
+function elemQuery<T extends Tags>(
+  selector: string,
+  tag?: T
+): "main" extends T ? HTMLElement : Elem<T> {
+  const el = document.querySelector(selector);
+  return assertElement(el, tag) as any;
+}
 function elemGet<T extends Tags>(
   id: string,
   tag?: T
@@ -105,15 +111,17 @@ function elemGetParent<T extends Tags>(
 }
 let count = 0;
 function elemRef<T extends Tags>(tag: T) {
-  const id = "e" + count++;
+  const id = "e" + (count++).toString(36);
   const ref = function () {
     return elemGet(id, tag) as Elem<T>;
   };
   ref.id = id;
   ref.tag = tag;
+  ref.toString = () => "#" + id;
   return ref;
 }
 
+elem.query = elemQuery;
 elem.get = elemGet;
 elem.getChild = elemGetChild;
 elem.getParent = elemGetParent;
@@ -122,10 +130,7 @@ elem.ref = elemRef;
 export { elem };
 
 let styleElement: HTMLStyleElement;
-export function style<T extends Partial<CSSStyleDeclaration>>(
-  selector: string,
-  properties: T
-) {
+export function style(selector: string | Stringable, properties: StyleProps) {
   if (!styleElement) {
     styleElement = document.createElement("style");
     document.head.append(styleElement);
