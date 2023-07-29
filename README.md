@@ -84,7 +84,7 @@ The code below...
 
 ```html
 <body><script src="https://unpkg.com/iuai/iuai.js"></script><script>
-  const { elem, style } = iuai;
+  const { elem, style, getElem } = iuai;
 
   style("#app", {
     textAlign: "center",
@@ -101,25 +101,25 @@ The code below...
 
   document.body.append(
     elem("div", { id: "app" }, [
-      elem("h1", "Hello World!"),
-      elem("button", { onclick: () => count() }, "click me"),
-      elem("p", [
+      elem("h1", {}, ["Hello World!"]),
+      elem("button", { onclick: () => count() }, ["click me"]),
+      elem("p", {}, [
         " you clicked ",
-        elem("span", { id: "counter" }, "0"),
+        elem("span", { id: "counter" }, ["0"]),
         " times. ",
       ]),
-      elem("button", { id: "clr", onclick: () => reset(), disabled: true }, "reset"),
+      elem("button", { id: "clr", onclick: () => reset(), disabled: true }, ["reset"]),
     ])
   );
 
-  let counter = +elem.get("counter").innerText;
+  let counter = +getElem("counter").innerText;
   function count() {
-    elem.get("counter").innerText = `${++counter}`;
-    elem.get("clr").disabled = false;
+    getElem("counter").innerText = `${++counter}`;
+    getElem("clr").disabled = false;
   };
   function reset() {
-    elem.get("counter").innerText = `${(counter = 0)}`;
-    elem.get("clr").disabled = true;
+    getElem("counter").innerText = `${(counter = 0)}`;
+    getElem("clr").disabled = true;
   };
 </script></body>
 ```
@@ -133,42 +133,11 @@ It abstracts the [`Document.createElement`](https://developer.mozilla.org/en-US/
 Signature:
 
 ```typescript
-function elem(tag: TagName): HTMLElementTagNameMap[typeof tag];
-function elem(tag: TagName, text: string): HTMLElementTagNameMap[typeof tag];
-function elem(tag: TagName, children: Array<HTMLElement | string>): HTMLElementTagNameMap[typeof tag];
-function elem(tag: TagName, attributes: object): HTMLElementTagNameMap[typeof tag];
-function elem(tag: TagName, attributes: object, text: string): HTMLElementTagNameMap[typeof tag];
-function elem(tag: TagName, attributes: object, children: Array<HTMLElement | string>): HTMLElementTagNameMap[typeof tag];
-```
-
-### `elem.get()`
-
-Returns the element with the given `id`. You can also pass a `tag` for type checking purposes.
-
-Signature:
-
-```typescript
-elem.get = function(id: string, tag?: TagName): HTMLElementTagNameMap[typeof tag];
-```
-
-### `elem.getChild()`
-
-Selects the element with the given `id` and returns it's first child. You can also pass a `tag` for type checking purposes.
-
-Signature:
-
-```typescript
-elem.getChild = function(id: string, tag?: TagName): HTMLElementTagNameMap[typeof tag];
-```
-
-### `elem.getParent()`
-
-Selects the element with the given `id` and returns it's parent. You can also pass a `tag` for type checking purposes.
-
-Signature:
-
-```typescript
-elem.getParent = function(id: string, tag?: TagName): HTMLElementTagNameMap[typeof tag];
+function elem<T extends keyof HTMLElementTagNameMap>(
+  tag: T,
+  attributes: Partial<HTMLElementTagNameMap[T]>,
+  children: Array<HTMLElement | string>
+): HTMLElementTagNameMap[T];
 ```
 
 ### `style()`
@@ -178,5 +147,8 @@ It creates and returns a global [CSSRule](https://developer.mozilla.org/en-US/do
 Signature:
 
 ```typescript
-function style(selector: string, properties: Partial<CSSStyleDeclaration>): CSSStyleRule;
+function style(
+  selector: string,
+  properties: Partial<CSSStyleDeclaration>
+): CSSStyleRule;
 ```

@@ -21,4 +21,5 @@ module.exports = {
     },
     globalObject: "this",
   },
+  devtool: "source-map",
 };
