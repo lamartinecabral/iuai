@@ -4,7 +4,7 @@ type DeepPartial<T extends object> = {
   [K in keyof T]?: T[K] extends object ? DeepPartial<T[K]> : T[K];
 };
 type TagObj<T extends Tags> = { tag: T; id?: string };
-type SelectorObj = { selector: string };
+type Stringable = { toString: () => string };
 type StyleProps = Partial<CSSStyleDeclaration> & { [property: string]: string };
 
 function setInlineStyle<T extends HTMLElement | CSSStyleRule>(
@@ -98,16 +98,14 @@ export function elem(...args) {
 }
 
 let styleElement: HTMLStyleElement;
-export function style(selector: string | SelectorObj, properties: StyleProps) {
+export function style(selector: string | Stringable, properties: StyleProps) {
   if (!styleElement) {
     styleElement = document.createElement("style");
     document.head.append(styleElement);
   }
   if (!styleElement.sheet) throw new Error("Unable to add style rule.");
   try {
-    const index = styleElement.sheet.insertRule(
-      (typeof selector === "string" ? selector : selector.selector) + " {}"
-    );
+    const index = styleElement.sheet.insertRule(selector + " {}");
     const rule = styleElement.sheet.cssRules[index] as CSSStyleRule;
     setInlineStyle(rule, properties);
     return rule;
@@ -168,5 +166,6 @@ export function refElem<T extends Tags>(tag: T) {
   ref.id = id;
   ref.tag = tag;
   ref.selector = "#" + id;
+  ref.toString = () => ref.selector;
   return ref;
 }
