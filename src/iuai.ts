@@ -86,7 +86,10 @@ export function elem(...args) {
     const [tag, attributes, children] = elemArgs(args);
     const el = document.createElement(tag);
     for (const attr in attributes) setAttribute(el, attr, attributes[attr]);
-    for (const child of children) el.append(child);
+    for (const child of children)
+      el.appendChild(
+        typeof child === "string" ? document.createTextNode(child) : child
+      );
     return el;
   } catch (e) {
     console.error(e);
@@ -117,7 +120,7 @@ function assertElement<T extends Element>(
   tag?: string
 ) {
   if (!el) throw new ReferenceError("Element not found.");
-  if (tag && el.tagName.toLowerCase() != tag)
+  if (tag && el.tagName.toLowerCase() !== tag)
     throw new TypeError("tag parameter and element's tag do not match.");
   return el;
 }
