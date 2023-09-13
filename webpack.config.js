@@ -22,4 +22,5 @@ module.exports = {
     globalObject: "this",
   },
   devtool: "source-map",
+  target: ["es5", "node"],
 };
