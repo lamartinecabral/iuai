@@ -101,7 +101,7 @@ let styleElement: HTMLStyleElement;
 export function style(selector: string | Stringable, properties: StyleProps) {
   if (!styleElement) {
     styleElement = document.createElement("style");
-    document.head.append(styleElement);
+    document.head.appendChild(styleElement);
   }
   if (!styleElement.sheet) throw new Error("Unable to add style rule.");
   try {
