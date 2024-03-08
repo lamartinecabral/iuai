@@ -24,16 +24,27 @@ In a browser:
 </script>
 ```
 
-Using npm:
+```html
+<script type="module">
+  import "https://unpkg.com/iuai/iuai.js";
+  const { elem, style } = iuai;
+</script>
+```
+
+In Node.js:
 
 ```sh
 $ npm install iuai
 ```
 
-In Node.js:
+```javascript
+require("iuai");
+const { elem, style } = iuai;
+```
 
 ```javascript
-const { elem, style } = require("iuai");
+import "iuai";
+const { elem, style } = iuai;
 ```
 
 # Usage example
@@ -83,45 +94,50 @@ The code below...
 ... can be rewritten like this:
 
 ```html
-<body><script src="https://unpkg.com/iuai/iuai.js"></script><script>
-  const { elem, style, getElem } = iuai;
+<body>
+  <script src="https://unpkg.com/iuai/iuai.js"></script>
+  <script>
+    const { elem, style, getElem } = iuai;
 
-  style("#app", {
-    textAlign: "center",
-    width: "fit-content",
-    border: "1px solid",
-    padding: "1em",
-  });
-  style("h1", {
-    color: "red",
-  });
-  style("*", {
-    fontFamily: "monospace",
-  });
+    style("#app", {
+      textAlign: "center",
+      width: "fit-content",
+      border: "1px solid",
+      padding: "1em",
+    });
+    style("h1", {
+      color: "red",
+    });
+    style("*", {
+      fontFamily: "monospace",
+    });
 
-  document.body.append(
-    elem("div", { id: "app" }, [
-      elem("h1", {}, ["Hello World!"]),
-      elem("button", { onclick: () => count() }, ["click me"]),
-      elem("p", {}, [
-        " you clicked ",
-        elem("span", { id: "counter" }, ["0"]),
-        " times. ",
-      ]),
-      elem("button", { id: "clr", onclick: () => reset(), disabled: true }, ["reset"]),
-    ])
-  );
+    document.body.append(
+      elem("div", { id: "app" }, [
+        elem("h1", {}, ["Hello World!"]),
+        elem("button", { onclick: () => count() }, ["click me"]),
+        elem("p", {}, [
+          " you clicked ",
+          elem("span", { id: "counter" }, ["0"]),
+          " times. ",
+        ]),
+        elem("button", { id: "clr", onclick: () => reset(), disabled: true }, [
+          "reset",
+        ]),
+      ])
+    );
 
-  let counter = +getElem("counter").innerText;
-  function count() {
-    getElem("counter").innerText = `${++counter}`;
-    getElem("clr").disabled = false;
-  };
-  function reset() {
-    getElem("counter").innerText = `${(counter = 0)}`;
-    getElem("clr").disabled = true;
-  };
-</script></body>
+    let counter = +getElem("counter").innerText;
+    function count() {
+      getElem("counter").innerText = `${++counter}`;
+      getElem("clr").disabled = false;
+    }
+    function reset() {
+      getElem("counter").innerText = `${(counter = 0)}`;
+      getElem("clr").disabled = true;
+    }
+  </script>
+</body>
 ```
 
 # Reference

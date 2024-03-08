@@ -61,27 +61,27 @@ function elemArgs<T extends Tags>(args: any[]) {
   ];
 }
 
-export function elem<T extends Tags>(tag: T | TagObj<T>): Elem<T>;
-export function elem<T extends Tags>(
+function elem<T extends Tags>(tag: T | TagObj<T>): Elem<T>;
+function elem<T extends Tags>(
   tag: T | TagObj<T>,
   attributes: DeepPartial<Elem<T>>
 ): Elem<T>;
-export function elem<T extends Tags>(
+function elem<T extends Tags>(
   tag: T | TagObj<T>,
   attributes: DeepPartial<Elem<T>>,
   children: Array<HTMLElement | string>
 ): Elem<T>;
-export function elem<T extends Tags>(
+function elem<T extends Tags>(
   tag: T | TagObj<T>,
   children: Array<HTMLElement | string>
 ): Elem<T>;
-export function elem<T extends Tags>(tag: T | TagObj<T>, text: string): Elem<T>;
-export function elem<T extends Tags>(
+function elem<T extends Tags>(tag: T | TagObj<T>, text: string): Elem<T>;
+function elem<T extends Tags>(
   tag: T | TagObj<T>,
   attributes: DeepPartial<Elem<T>>,
   text: string
 ): Elem<T>;
-export function elem(...args) {
+function elem(...args) {
   try {
     const [tag, attributes, children] = elemArgs(args);
     const el = document.createElement(tag);
@@ -98,7 +98,7 @@ export function elem(...args) {
 }
 
 let styleElement: HTMLStyleElement;
-export function style(selector: string | Stringable, properties: StyleProps) {
+function style(selector: string | Stringable, properties: StyleProps) {
   if (!styleElement) {
     styleElement = document.createElement("style");
     document.head.appendChild(styleElement);
@@ -125,7 +125,7 @@ function assertElement<T extends Element>(
   return el;
 }
 
-export function queryElem<T extends Tags>(
+function queryElem<T extends Tags>(
   selector: string,
   tag?: T
 ): "main" extends T ? HTMLElement : Elem<T> {
@@ -133,7 +133,7 @@ export function queryElem<T extends Tags>(
   return assertElement(el, tag) as any;
 }
 
-export function getElem<T extends Tags>(
+function getElem<T extends Tags>(
   id: string,
   tag?: T
 ): "main" extends T ? HTMLElement : Elem<T> {
@@ -141,7 +141,7 @@ export function getElem<T extends Tags>(
   return assertElement(el, tag) as any;
 }
 
-export function getChild<T extends Tags>(
+function getChild<T extends Tags>(
   id: string,
   tag?: T
 ): "main" extends T ? HTMLElement : Elem<T> {
@@ -149,7 +149,7 @@ export function getChild<T extends Tags>(
   return assertElement(el, tag) as any;
 }
 
-export function getParent<T extends Tags>(
+function getParent<T extends Tags>(
   id: string,
   tag?: T
 ): "main" extends T ? HTMLElement : Elem<T> {
@@ -158,7 +158,7 @@ export function getParent<T extends Tags>(
 }
 
 let count = 0;
-export function refElem<T extends Tags>(tag: T) {
+function refElem<T extends Tags>(tag: T) {
   const id = "e" + (count++).toString(36);
   const ref = function () {
     return getElem(id, tag) as Elem<T>;
@@ -169,3 +169,22 @@ export function refElem<T extends Tags>(tag: T) {
   ref.toString = () => ref.selector;
   return ref;
 }
+
+const thisModule = {
+  elem,
+  style,
+  getElem,
+  queryElem,
+  getChild,
+  getParent,
+  refElem,
+};
+
+declare global {
+  var iuai: typeof thisModule;
+}
+
+console.log("oi");
+((typeof self !== "undefined" && self) || globalThis).iuai = thisModule;
+
+export {};

@@ -15,12 +15,7 @@ module.exports = {
   output: {
     filename: "iuai.js",
     path: path.resolve(__dirname, ""),
-    library: {
-      name: "iuai",
-      type: "umd",
-    },
-    globalObject: "this",
   },
   devtool: "source-map",
-  target: ["es5", "node"],
+  target: ["es5", "web"],
 };
