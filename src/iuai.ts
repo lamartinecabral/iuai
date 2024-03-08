@@ -184,7 +184,6 @@ declare global {
   var iuai: typeof thisModule;
 }
 
-console.log("oi");
 ((typeof self !== "undefined" && self) || globalThis).iuai = thisModule;
 
 export {};
