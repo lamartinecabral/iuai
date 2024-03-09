@@ -105,7 +105,8 @@ function style(selector: string | Stringable, properties: StyleProps) {
   }
   if (!styleElement.sheet) throw new Error("Unable to add style rule.");
   try {
-    const index = styleElement.sheet.insertRule(selector + " {}", 0);
+    const index = styleElement.sheet.cssRules.length;
+    styleElement.sheet.insertRule(selector + " {}", index);
     const rule = styleElement.sheet.cssRules.item(index) as CSSStyleRule;
     setInlineStyle(rule, properties);
     return rule;
