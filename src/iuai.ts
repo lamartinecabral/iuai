@@ -97,6 +97,20 @@ function elem(...args) {
   }
 }
 
+function initRule(
+  sheet: CSSStyleSheet,
+  selector: string | Stringable,
+  content?: string
+) {
+  const index = sheet.cssRules.length;
+  sheet.insertRule(
+    selector + (content ? ` { content: "${content}"; }` : " {}"),
+    index
+  );
+  const rule = sheet.cssRules.item(index) as CSSStyleRule;
+  return rule;
+}
+
 let styleElement: HTMLStyleElement;
 function style(selector: string | Stringable, properties: StyleProps) {
   if (!styleElement) {
@@ -105,9 +119,7 @@ function style(selector: string | Stringable, properties: StyleProps) {
   }
   if (!styleElement.sheet) throw new Error("Unable to add style rule.");
   try {
-    const index = styleElement.sheet.cssRules.length;
-    styleElement.sheet.insertRule(selector + " {}", index);
-    const rule = styleElement.sheet.cssRules.item(index) as CSSStyleRule;
+    const rule = initRule(styleElement.sheet, selector, properties.content);
     setInlineStyle(rule, properties);
     return rule;
   } catch (e) {
