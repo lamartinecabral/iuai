@@ -14,8 +14,13 @@ function setInlineStyle<T extends HTMLElement | CSSStyleRule>(
   try {
     for (const prop in style) {
       try {
-        if (prop in element.style) element.style[prop] = style[prop] as string;
-        else element.style.setProperty(prop, style[prop] as string);
+        const value =
+          typeof style[prop] === "string"
+            ? style[prop].replace("!important", "")
+            : style[prop];
+        const important = value === style[prop] ? "" : "important";
+        if (prop in element.style && !important) element.style[prop] = value;
+        else element.style.setProperty(prop, value, important);
       } catch (e) {
         console.error(e);
       }
