@@ -188,7 +188,7 @@ function refElem<T extends Tags>(tag: T) {
   return ref;
 }
 
-const thisModule = {
+const thisModule = Object.freeze({
   elem,
   style,
   getElem,
@@ -196,12 +196,19 @@ const thisModule = {
   getChild,
   getParent,
   refElem,
-};
+});
 
 declare global {
   var iuai: typeof thisModule;
 }
 
-((typeof self !== "undefined" && self) || globalThis).iuai = thisModule;
+Object.defineProperty(
+  (typeof self !== "undefined" && self) || globalThis,
+  "iuai",
+  {
+    value: thisModule,
+    enumerable: true,
+  }
+);
 
 export {};

@@ -31,7 +31,7 @@ declare function refElem<T extends Tags>(tag: T): {
     selector: string;
     toString(): string;
 };
-declare const thisModule: {
+declare const thisModule: Readonly<{
     elem: typeof elem;
     style: typeof style;
     getElem: typeof getElem;
@@ -39,7 +39,7 @@ declare const thisModule: {
     getChild: typeof getChild;
     getParent: typeof getParent;
     refElem: typeof refElem;
-};
+}>;
 declare global {
     var iuai: typeof thisModule;
 }
