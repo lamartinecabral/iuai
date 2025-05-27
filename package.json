@@ -1,6 +1,6 @@
 {
   "name": "iuai",
-  "version": "0.6.3",
+  "version": "0.7.0",
   "description": "A really small set of utilities to build web apps.",
   "repository": "github:lamartinecabral/iuai",
   "homepage": "https://www.github.com/lamartinecabral/iuai",
@@ -14,6 +14,11 @@
   "author": "lamartinecabral",
   "license": "ISC",
   "main": "iuai.js",
+  "files": [
+    "iuai.js",
+    "iuai.js.map",
+    "iuai.d.ts"
+  ],
   "typings": "iuai.d.ts",
   "scripts": {
     "start": "webpack",

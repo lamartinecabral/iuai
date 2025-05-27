@@ -1,8 +1,12 @@
 type Tags = keyof HTMLElementTagNameMap;
 type Elem<T extends Tags> = HTMLElementTagNameMap[T];
-type DeepPartial<T extends object> = {
-  [K in keyof T]?: T[K] extends object ? DeepPartial<T[K]> : T[K];
-};
+type DeepPartial<T extends object> = T extends Function | Array<unknown>
+  ? T
+  : {
+      [K in keyof T]?: T[K] extends object ? DeepPartial<T[K]> : T[K];
+    };
+type ElemAttributes<T extends Tags> = DeepPartial<Elem<T>>;
+type ElemChildren = Array<HTMLElement | string>;
 type TagObj<T extends Tags> = { tag: T; id?: string };
 type Stringable = { toString: () => string };
 type StyleProps = Partial<CSSStyleDeclaration> & { [property: string]: string };
@@ -47,43 +51,48 @@ function setAttribute<T extends HTMLElement>(
 function elemArgs<T extends Tags>(args: any[]) {
   const [tag, id]: [T, string] =
     typeof args[0] === "string" ? [args[0], ""] : [args[0].tag, args[0].id];
-  let attributes: DeepPartial<Elem<T>> = {};
-  let children: Array<HTMLElement | string> = [];
+  let attributes = {} as ElemAttributes<T>;
+  let children = [] as ElemChildren;
   if (args[1]) {
-    if (typeof args[1] === "string") children = [args[1]];
+    if (args[1] instanceof Element)
+      throw new TypeError(
+        "don't use an Element as attributes for another Element"
+      );
+    else if (typeof args[1] === "string") children = [args[1]];
     else if (Array.isArray(args[1])) children = args[1];
-    else attributes = args[1];
+    else if (args[1]) attributes = args[1];
   }
-  if (args[2]) {
+  if (args.length > 3) {
+    children = args.slice(2);
+  } else if (args[2]) {
     if (typeof args[2] === "string") children = [args[2]];
     else children = args[2];
+  } else {
+    if (Array.isArray(attributes.children)) children = attributes.children;
   }
   if (id) attributes = { ...attributes, id };
-  return [tag, attributes, children] as [
-    T,
-    DeepPartial<Elem<T>>,
-    Array<HTMLElement | string>
-  ];
+
+  return [tag, attributes, children] as const;
 }
 
 function elem<T extends Tags>(tag: T | TagObj<T>): Elem<T>;
 function elem<T extends Tags>(
   tag: T | TagObj<T>,
-  attributes: DeepPartial<Elem<T>>
+  attributes: ElemAttributes<T>
 ): Elem<T>;
 function elem<T extends Tags>(
   tag: T | TagObj<T>,
-  attributes: DeepPartial<Elem<T>>,
-  children: Array<HTMLElement | string>
+  attributes: ElemAttributes<T>,
+  children: ElemChildren
 ): Elem<T>;
 function elem<T extends Tags>(
   tag: T | TagObj<T>,
-  children: Array<HTMLElement | string>
+  children: ElemChildren
 ): Elem<T>;
 function elem<T extends Tags>(tag: T | TagObj<T>, text: string): Elem<T>;
 function elem<T extends Tags>(
   tag: T | TagObj<T>,
-  attributes: DeepPartial<Elem<T>>,
+  attributes: ElemAttributes<T>,
   text: string
 ): Elem<T>;
 function elem(...args) {
