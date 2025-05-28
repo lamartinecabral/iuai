@@ -88,10 +88,9 @@ function elemArgs<T extends Tags>(args: any[]) {
   }
   if (args.length > 3) {
     children = args.slice(2);
-  } else if (args[2]) {
-    if (typeof args[2] === "string" || typeof args[2] === "number")
-      children = [String(args[2])];
-    else children = args[2];
+  } else if (args.length === 3) {
+    if (Array.isArray(args[2])) children = args[2];
+    else children = [args[2]];
   } else {
     if (Array.isArray(attributes.children)) children = attributes.children;
   }
