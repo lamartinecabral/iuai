@@ -48,6 +48,10 @@ function setAttribute<T extends HTMLElement>(
   }
 }
 
+function isComponent(elemArgs: any[]) {
+  return !(typeof elemArgs[0] === "string" || "tag" in elemArgs[0]);
+}
+
 function elemArgs<T extends Tags>(args: any[]) {
   const [tag, id]: [T, string] =
     typeof args[0] === "string" ? [args[0], ""] : [args[0].tag, args[0].id];
@@ -97,6 +101,8 @@ function elem<T extends Tags>(
 ): Elem<T>;
 function elem(...args) {
   try {
+    if (isComponent(args))
+      return args[0]({ children: args.slice(2), ...args[1] });
     const [tag, attributes, children] = elemArgs(args);
     const el = document.createElement(tag);
     for (const attr in attributes) setAttribute(el, attr, attributes[attr]);
