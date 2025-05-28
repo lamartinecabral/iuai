@@ -52,7 +52,7 @@ function isComponent(elemArgs: any[]) {
   return !(typeof elemArgs[0] === "string" || "tag" in elemArgs[0]);
 }
 
-function appendChildren(parent: HTMLElement, children: any[]) {
+function appendChildren(parent: Node, children: any[]) {
   for (const child of children) {
     if (typeof child === "boolean" || typeof child === "function") continue;
     if (child === null || child === undefined) continue;
@@ -124,8 +124,15 @@ function elem(...args) {
     if (isComponent(args))
       return args[0]({ children: args.slice(2), ...args[1] });
     const [tag, attributes, children] = elemArgs(args);
-    const el = document.createElement(tag);
-    for (const attr in attributes) setAttribute(el, attr, attributes[attr]);
+    const el = (() => {
+      if (tag === String("")) {
+        return document.createDocumentFragment();
+      } else {
+        const el = document.createElement(tag);
+        for (const attr in attributes) setAttribute(el, attr, attributes[attr]);
+        return el;
+      }
+    })();
     appendChildren(el, children);
     return el;
   } catch (e) {
