@@ -52,6 +52,26 @@ function isComponent(elemArgs: any[]) {
   return !(typeof elemArgs[0] === "string" || "tag" in elemArgs[0]);
 }
 
+function appendChildren(parent: HTMLElement, children: any[]) {
+  for (const child of children) {
+    if (typeof child === "boolean" || typeof child === "function") continue;
+    if (child === null || child === undefined) continue;
+    if (Array.isArray(child)) {
+      appendChildren(parent, child);
+      continue;
+    }
+    try {
+      parent.appendChild(
+        typeof child === "object"
+          ? child
+          : document.createTextNode(String(child))
+      );
+    } catch (err) {
+      console.error(err);
+    }
+  }
+}
+
 function elemArgs<T extends Tags>(args: any[]) {
   const [tag, id]: [T, string] =
     typeof args[0] === "string" ? [args[0], ""] : [args[0].tag, args[0].id];
@@ -106,10 +126,7 @@ function elem(...args) {
     const [tag, attributes, children] = elemArgs(args);
     const el = document.createElement(tag);
     for (const attr in attributes) setAttribute(el, attr, attributes[attr]);
-    for (const child of children)
-      el.appendChild(
-        typeof child === "string" ? document.createTextNode(child) : child
-      );
+    appendChildren(el, children);
     return el;
   } catch (e) {
     console.error(e);
