@@ -121,8 +121,7 @@ function elem<T extends Tags>(
 ): Elem<T>;
 function elem(...args: any[]) {
   try {
-    const component = getComponent(args);
-    if (component) return component;
+    if (isComponent(args[0])) return getComponent(args);
     const [tag, attributes, children] = elemArgs(args);
     const el = createElem(tag, attributes);
     appendChildren(el, children);
@@ -236,7 +235,6 @@ function isComponent(value: unknown): value is Function {
 }
 
 function getComponent(args: any[]) {
-  if (!isComponent(args[0])) return;
   try {
     // this is for jsx compatibility
     return args[0]({
