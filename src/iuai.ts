@@ -261,13 +261,18 @@ declare global {
   var iuai: typeof thisModule;
 }
 
-Object.defineProperty(
-  (typeof self !== "undefined" && self) || globalThis,
-  "iuai",
-  {
-    value: thisModule,
+const _global = (typeof self !== "undefined" && self) || globalThis;
+
+Object.defineProperty(_global, "iuai", {
+  value: thisModule,
+  enumerable: true,
+});
+
+// this is for jsx compatibility
+"React" in _global ||
+  Object.defineProperty(_global, "React", {
+    value: { createElement: elem, Fragment: "" },
     enumerable: true,
-  }
-);
+  });
 
 export {};
