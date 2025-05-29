@@ -6,8 +6,10 @@ type DeepPartial<T extends object> = T extends Function | Array<unknown>
       [K in keyof T]?: T[K] extends object ? DeepPartial<T[K]> : T[K];
     };
 type ElemAttributes<T extends Tags> = DeepPartial<Elem<T>>;
-type ElemChildren = Array<HTMLElement | string>;
+type ElemText = string | number;
+type ElemChildren = Array<HTMLElement | ElemText>;
 type TagObj<T extends Tags> = { tag: T; id?: string };
+type TagLike<T extends Tags> = T | TagObj<T>;
 type Stringable = { toString: () => string };
 type StyleProps = Partial<CSSStyleDeclaration> & { [property: string]: string };
 
@@ -23,7 +25,8 @@ function setInlineStyle<T extends HTMLElement | CSSStyleRule>(
             ? style[prop].replace("!important", "")
             : style[prop];
         const important = value === style[prop] ? "" : "important";
-        if (prop in element.style && !important) element.style[prop] = value;
+        if (prop in element.style && !important)
+          element.style[prop as any] = value;
         else element.style.setProperty(prop, value, important);
       } catch (e) {
         console.error(e);
@@ -41,15 +44,21 @@ function setAttribute<T extends HTMLElement>(
 ) {
   try {
     if (name === "style") setInlineStyle(element, value);
-    else if (name in element) element[name] = value;
+    else if (name in element) element[name as keyof T] = value;
     else element.setAttribute(name, value);
   } catch (e) {
     throw e;
   }
 }
 
-function isComponent(elemArgs: any[]) {
-  return !(typeof elemArgs[0] === "string" || "tag" in elemArgs[0]);
+function createElem<T extends Tags>(tag: T, attributes: ElemAttributes<T>) {
+  if (tag === String("")) {
+    return document.createDocumentFragment();
+  } else {
+    const el = document.createElement(tag);
+    for (const attr in attributes) setAttribute(el, attr, attributes[attr]);
+    return el;
+  }
 }
 
 function appendChildren(parent: Node, children: any[]) {
@@ -78,19 +87,13 @@ function elemArgs<T extends Tags>(args: any[]) {
   let attributes = {} as ElemAttributes<T>;
   let children = [] as ElemChildren;
   if (args[1]) {
-    if (args[1] instanceof Element)
-      throw new TypeError(
-        "don't use an Element as attributes for another Element"
-      );
-    else if (typeof args[1] === "string") children = [args[1]];
+    if (typeof args[1] === "string" || typeof args[1] === "number")
+      children = [args[1]];
     else if (Array.isArray(args[1])) children = args[1];
     else if (args[1]) attributes = args[1];
   }
-  if (args.length > 3) {
+  if (args.length >= 3) {
     children = args.slice(2);
-  } else if (args.length === 3) {
-    if (Array.isArray(args[2])) children = args[2];
-    else children = [args[2]];
   } else {
     if (Array.isArray(attributes.children)) children = attributes.children;
   }
@@ -99,40 +102,29 @@ function elemArgs<T extends Tags>(args: any[]) {
   return [tag, attributes, children] as const;
 }
 
-function elem<T extends Tags>(tag: T | TagObj<T>): Elem<T>;
+function elem<T extends Tags>(tag: TagLike<T>): Elem<T>;
 function elem<T extends Tags>(
-  tag: T | TagObj<T>,
+  tag: TagLike<T>,
   attributes: ElemAttributes<T>
 ): Elem<T>;
 function elem<T extends Tags>(
-  tag: T | TagObj<T>,
+  tag: TagLike<T>,
   attributes: ElemAttributes<T>,
   children: ElemChildren
 ): Elem<T>;
+function elem<T extends Tags>(tag: TagLike<T>, children: ElemChildren): Elem<T>;
+function elem<T extends Tags>(tag: TagLike<T>, text: ElemText): Elem<T>;
 function elem<T extends Tags>(
-  tag: T | TagObj<T>,
-  children: ElemChildren
-): Elem<T>;
-function elem<T extends Tags>(tag: T | TagObj<T>, text: string): Elem<T>;
-function elem<T extends Tags>(
-  tag: T | TagObj<T>,
+  tag: TagLike<T>,
   attributes: ElemAttributes<T>,
-  text: string
+  text: ElemText
 ): Elem<T>;
-function elem(...args) {
+function elem(...args: any[]) {
   try {
-    if (isComponent(args))
-      return args[0]({ children: args.slice(2), ...args[1] });
+    const component = getComponent(args);
+    if (component) return component;
     const [tag, attributes, children] = elemArgs(args);
-    const el = (() => {
-      if (tag === String("")) {
-        return document.createDocumentFragment();
-      } else {
-        const el = document.createElement(tag);
-        for (const attr in attributes) setAttribute(el, attr, attributes[attr]);
-        return el;
-      }
-    })();
+    const el = createElem(tag, attributes);
     appendChildren(el, children);
     return el;
   } catch (e) {
@@ -214,17 +206,47 @@ function getParent<T extends Tags>(
   return assertElement(el, tag) as any;
 }
 
-let count = 0;
-function refElem<T extends Tags>(tag: T) {
-  const id = "e" + (count++).toString(36);
-  const ref = function () {
-    return getElem(id, tag) as Elem<T>;
+const refElem = (() => {
+  let refCount = 0;
+  return <T extends Tags>(tag: T) => {
+    const id = "e" + (refCount++).toString(36);
+    const ref = function () {
+      return getElem(id, tag) as Elem<T>;
+    };
+    ref.id = id;
+    ref.tag = tag;
+    ref.selector = tag + "#" + id;
+    ref.toString = function (): string {
+      return this.selector;
+    };
+    return Object.freeze(ref);
   };
-  ref.id = id;
-  ref.tag = tag;
-  ref.selector = "#" + id;
-  ref.toString = () => ref.selector;
-  return ref;
+})();
+
+function isRef(value: Function): value is ReturnType<typeof refElem> {
+  return (
+    Object.isFrozen(value) &&
+    "selector" in value &&
+    value.selector === String(value)
+  );
+}
+
+function isComponent(value: unknown): value is Function {
+  return typeof value === "function" && !isRef(value);
+}
+
+function getComponent(args: any[]) {
+  if (!isComponent(args[0])) return;
+  try {
+    // this is for jsx compatibility
+    return args[0]({
+      children: args.slice(2),
+      ...args[1],
+    }) as HTMLElement;
+  } catch (err) {
+    console.error(err);
+    return;
+  }
 }
 
 const thisModule = Object.freeze({
