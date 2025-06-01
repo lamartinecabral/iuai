@@ -132,8 +132,20 @@ function elem(...args: any[]) {
   }
 }
 
-function initRule(
-  sheet: CSSStyleSheet,
+const getStyleSheet = (() => {
+  let styleElement: HTMLStyleElement;
+  return () => {
+    if (!styleElement) {
+      styleElement = document.createElement("style");
+      document.head.appendChild(styleElement);
+    }
+    if (!styleElement.sheet) throw new Error("Unable to add style rule.");
+    return styleElement.sheet;
+  };
+})();
+
+function initRule<T extends CSSRule = CSSRule>(
+  sheet: CSSStyleSheet | CSSMediaRule,
   selector: string | Stringable,
   content?: string
 ) {
@@ -142,21 +154,46 @@ function initRule(
     selector + (content ? ` { content: "${content}"; }` : " {}"),
     index
   );
-  const rule = sheet.cssRules.item(index) as CSSStyleRule;
+  const rule = sheet.cssRules.item(index) as T;
   return rule;
 }
 
-let styleElement: HTMLStyleElement;
 function style(selector: string | Stringable, properties: StyleProps) {
-  if (!styleElement) {
-    styleElement = document.createElement("style");
-    document.head.appendChild(styleElement);
-  }
-  if (!styleElement.sheet) throw new Error("Unable to add style rule.");
   try {
-    const rule = initRule(styleElement.sheet, selector, properties.content);
+    const rule = initRule<CSSStyleRule>(
+      getStyleSheet(),
+      selector,
+      properties.content
+    );
     setInlineStyle(rule, properties);
     return rule;
+  } catch (e) {
+    console.error(e);
+    return null;
+  }
+}
+
+function media(condition: string, styleRules: Record<string, StyleProps>) {
+  console.log("media");
+  try {
+    const mediaRule = initRule<CSSMediaRule>(
+      getStyleSheet(),
+      `@media ${condition}`
+    );
+    try {
+      for (const selector in styleRules) {
+        const properties = styleRules[selector];
+        const rule = initRule<CSSStyleRule>(
+          mediaRule,
+          selector,
+          properties.content
+        );
+        setInlineStyle(rule, properties);
+      }
+    } catch (e) {
+      console.error(e);
+    }
+    return mediaRule;
   } catch (e) {
     console.error(e);
     return null;
@@ -250,6 +287,7 @@ function getComponent(args: any[]) {
 const thisModule = Object.freeze({
   elem,
   style,
+  media,
   getElem,
   queryElem,
   getChild,

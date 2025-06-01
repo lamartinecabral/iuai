@@ -24,6 +24,7 @@ declare function elem<T extends Tags>(tag: TagLike<T>, children: ElemChildren): 
 declare function elem<T extends Tags>(tag: TagLike<T>, text: ElemText): Elem<T>;
 declare function elem<T extends Tags>(tag: TagLike<T>, attributes: ElemAttributes<T>, text: ElemText): Elem<T>;
 declare function style(selector: string | Stringable, properties: StyleProps): CSSStyleRule | null;
+declare function media(condition: string, styleRules: Record<string, StyleProps>): CSSMediaRule | null;
 declare function queryElem<T extends Tags>(selector: string, tag?: T): "main" extends T ? HTMLElement : Elem<T>;
 declare function getElem<T extends Tags>(id: string, tag?: T): "main" extends T ? HTMLElement : Elem<T>;
 declare function getChild<T extends Tags>(id: string, tag?: T): "main" extends T ? HTMLElement : Elem<T>;
@@ -31,6 +32,7 @@ declare function getParent<T extends Tags>(id: string, tag?: T): "main" extends 
 declare const thisModule: Readonly<{
     elem: typeof elem;
     style: typeof style;
+    media: typeof media;
     getElem: typeof getElem;
     queryElem: typeof queryElem;
     getChild: typeof getChild;
