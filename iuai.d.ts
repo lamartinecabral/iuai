@@ -37,7 +37,7 @@ declare const thisModule: Readonly<{
     queryElem: typeof queryElem;
     getChild: typeof getChild;
     getParent: typeof getParent;
-    refElem: <T extends keyof HTMLElementTagNameMap>(tag: T) => {
+    refElem: <T extends Tags>(tag: T) => {
         (): Elem<T>;
         id: string;
         tag: T;

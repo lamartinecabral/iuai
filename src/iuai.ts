@@ -174,7 +174,6 @@ function style(selector: string | Stringable, properties: StyleProps) {
 }
 
 function media(condition: string, styleRules: Record<string, StyleProps>) {
-  console.log("media");
   try {
     const mediaRule = initRule<CSSMediaRule>(
       getStyleSheet(),
