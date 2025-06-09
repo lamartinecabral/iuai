@@ -1,6 +1,8 @@
 {
   "files": ["src/iuai.ts"],
   "compilerOptions": {
+    "target": "es5",
+    "lib": ["DOM", "ES5"],
     "declaration": true,
     "strict": true,
     "outDir": ""

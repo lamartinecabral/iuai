@@ -31,7 +31,7 @@ In a browser:
 </script>
 ```
 
-In Node.js:
+Using npm:
 
 ```sh
 $ npm install iuai

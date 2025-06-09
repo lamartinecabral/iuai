@@ -17,26 +17,21 @@ type Stringable = {
 type StyleProps = Partial<CSSStyleDeclaration> & {
     [property: string]: string;
 };
-declare function elem<T extends Tags>(tag: TagLike<T>): Elem<T>;
-declare function elem<T extends Tags>(tag: TagLike<T>, attributes: ElemAttributes<T>): Elem<T>;
-declare function elem<T extends Tags>(tag: TagLike<T>, attributes: ElemAttributes<T>, children: ElemChildren): Elem<T>;
-declare function elem<T extends Tags>(tag: TagLike<T>, children: ElemChildren): Elem<T>;
-declare function elem<T extends Tags>(tag: TagLike<T>, text: ElemText): Elem<T>;
-declare function elem<T extends Tags>(tag: TagLike<T>, attributes: ElemAttributes<T>, text: ElemText): Elem<T>;
-declare function style(selector: string | Stringable, properties: StyleProps): CSSStyleRule | null;
-declare function media(condition: string, styleRules: Record<string, StyleProps>): CSSMediaRule | null;
-declare function queryElem<T extends Tags>(selector: string, tag?: T): "main" extends T ? HTMLElement : Elem<T>;
-declare function getElem<T extends Tags>(id: string, tag?: T): "main" extends T ? HTMLElement : Elem<T>;
-declare function getChild<T extends Tags>(id: string, tag?: T): "main" extends T ? HTMLElement : Elem<T>;
-declare function getParent<T extends Tags>(id: string, tag?: T): "main" extends T ? HTMLElement : Elem<T>;
-declare const thisModule: Readonly<{
-    elem: typeof elem;
-    style: typeof style;
-    media: typeof media;
-    getElem: typeof getElem;
-    queryElem: typeof queryElem;
-    getChild: typeof getChild;
-    getParent: typeof getParent;
+declare const iuai: Readonly<{
+    elem: {
+        <T extends Tags>(tag: TagLike<T>): Elem<T>;
+        <T extends Tags>(tag: TagLike<T>, attributes: ElemAttributes<T>): Elem<T>;
+        <T extends Tags>(tag: TagLike<T>, attributes: ElemAttributes<T>, children: ElemChildren): Elem<T>;
+        <T extends Tags>(tag: TagLike<T>, children: ElemChildren): Elem<T>;
+        <T extends Tags>(tag: TagLike<T>, text: ElemText): Elem<T>;
+        <T extends Tags>(tag: TagLike<T>, attributes: ElemAttributes<T>, text: ElemText): Elem<T>;
+    };
+    style: (selector: string | Stringable, properties: StyleProps) => CSSStyleRule | null;
+    media: (condition: string, styleRules: Record<string, StyleProps>) => CSSMediaRule | null;
+    getElem: <T extends Tags>(id: string, tag?: T) => "main" extends T ? HTMLElement : Elem<T>;
+    queryElem: <T extends Tags>(selector: string, tag?: T) => "main" extends T ? HTMLElement : Elem<T>;
+    getChild: <T extends Tags>(id: string, tag?: T) => "main" extends T ? HTMLElement : Elem<T>;
+    getParent: <T extends Tags>(id: string, tag?: T) => "main" extends T ? HTMLElement : Elem<T>;
     refElem: <T extends Tags>(tag: T) => {
         (): Elem<T>;
         id: string;
@@ -44,8 +39,10 @@ declare const thisModule: Readonly<{
         selector: string;
         toString(): string;
     };
+    version: string;
 }>;
+export type Iuai = typeof iuai;
 declare global {
-    var iuai: typeof thisModule;
+    var iuai: Iuai;
 }
 export {};
