@@ -1,2 +1,266 @@
-!function(){"use strict";var e={862:function(e,t){var r=this&&this.__assign||function(){return r=Object.assign||function(e){for(var t,r=1,n=arguments.length;r<n;r++)for(var o in t=arguments[r])Object.prototype.hasOwnProperty.call(t,o)&&(e[o]=t[o]);return e},r.apply(this,arguments)};function n(e,t){try{for(var r in t)try{var n="string"==typeof t[r]?t[r].replace("!important",""):t[r],o=n===t[r]?"":"important";r in e.style&&!o?e.style[r]=n:e.style.setProperty(r,n,o)}catch(e){console.error(e)}}catch(e){throw e}}function o(e,t,r){try{"style"===t?n(e,r):t in e?e[t]=r:e.setAttribute(t,r)}catch(e){throw e}}function c(e,t){for(var r=0,n=t;r<n.length;r++){var o=n[r];if("boolean"!=typeof o&&"function"!=typeof o&&null!=o)if(Array.isArray(o))c(e,o);else try{e.appendChild("object"==typeof o?o:""!==o&&document.createTextNode(String(o)))}catch(e){console.error(e)}}}function i(){for(var e,t=[],n=0;n<arguments.length;n++)t[n]=arguments[n];try{if("function"==typeof(e=t[0])&&!function(e){return Object.isFrozen(e)&&"selector"in e&&e.selector===String(e)}(e))return function(e){try{return e[0](r({children:e.slice(2)},e[1]))}catch(e){return void console.error(e)}}(t);var i=function(e){var t="string"==typeof e[0]?[e[0],""]:[e[0].tag,e[0].id],n=t[0],o=t[1],c={},i=[];return e[1]&&("string"==typeof e[1]||"number"==typeof e[1]?i=[e[1]]:Array.isArray(e[1])?i=e[1]:e[1]&&(c=e[1])),e.length>=3?i=e.slice(2):Array.isArray(c.children)&&(i=c.children),o&&(c=r(r({},c),{id:o})),[n,c,i]}(t),a=i[0],u=i[1],l=i[2],f=function(e,t){if(e===String(""))return document.createDocumentFragment();var r=document.createElement(e);for(var n in t)o(r,n,t[n]);return r}(a,u);return c(f,l),f}catch(e){return console.error(e),""}}Object.defineProperty(t,"__esModule",{value:!0});var a,u=function(){if(a||(a=document.createElement("style"),document.head.appendChild(a)),!a.sheet)throw new Error("Unable to add style rule.");return a.sheet};function l(e,t,r){var n=e.cssRules.length;return e.insertRule(t+(r?' { content: "'.concat(r,'"; }'):" {}"),n),e.cssRules.item(n)}function f(e,t){if(!e)throw new ReferenceError("Element not found.");if(t&&e.tagName.toLowerCase()!==t)throw new TypeError("tag parameter and element's tag do not match.");return e}function s(e,t){return f(document.getElementById(e),t)}var d,y=(d=0,function(e){var t="e"+(d++).toString(36),r=function(){return s(t,e)};return r.id=t,r.tag=e,r.selector=e+"#"+t,r.toString=function(){return this.selector},Object.freeze(r)}),m=Object.freeze({elem:i,style:function(e,t){try{var r=l(u(),e,t.content);return n(r,t),r}catch(e){return console.error(e),null}},media:function(e,t){try{var r=l(u(),"@media ".concat(e));try{for(var o in t){var c=t[o];n(l(r,o,c.content),c)}}catch(e){console.error(e)}return r}catch(e){return console.error(e),null}},getElem:s,queryElem:function(e,t){return f(document.querySelector(e),t)},getChild:function(e,t){var r;return f(null===(r=document.getElementById(e))||void 0===r?void 0:r.firstElementChild,t)},getParent:function(e,t){var r;return f(null===(r=document.getElementById(e))||void 0===r?void 0:r.parentElement,t)},refElem:y}),h="undefined"!=typeof self&&self||globalThis;Object.defineProperty(h,"iuai",{value:m,enumerable:!0}),"React"in h||Object.defineProperty(h,"React",{value:{createElement:i,Fragment:""},enumerable:!0})}};e[862](0,{})}();
-//# sourceMappingURL=iuai.js.map
+!(function(){
+"use strict";
+var __assign = (this && this.__assign) || function () {
+    __assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    return __assign.apply(this, arguments);
+};
+var __rest = (this && this.__rest) || function (s, e) {
+    var t = {};
+    for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
+        t[p] = s[p];
+    if (s != null && typeof Object.getOwnPropertySymbols === "function")
+        for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
+            if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i]))
+                t[p[i]] = s[p[i]];
+        }
+    return t;
+};
+function setInlineStyle(element, style) {
+    try {
+        for (var prop in style) {
+            try {
+                var value = typeof style[prop] === "string"
+                    ? style[prop].replace("!important", "")
+                    : style[prop];
+                var important = value === style[prop] ? "" : "important";
+                if (prop in element.style && !important)
+                    element.style[prop] = value;
+                else
+                    element.style.setProperty(prop, value, important);
+            }
+            catch (e) {
+                console.error(e);
+            }
+        }
+    }
+    catch (e) {
+        throw e;
+    }
+}
+function setAttribute(element, name, value) {
+    try {
+        if (name === "style")
+            setInlineStyle(element, value);
+        else if (name in element)
+            element[name] = value;
+        else
+            element.setAttribute(name, value);
+    }
+    catch (e) {
+        throw e;
+    }
+}
+function createElem(tag, attributes) {
+    if (tag === String("")) {
+        return document.createDocumentFragment();
+    }
+    else {
+        var el = document.createElement(tag);
+        for (var attr in attributes)
+            setAttribute(el, attr, attributes[attr]);
+        return el;
+    }
+}
+function appendChildren(parent, children) {
+    for (var _i = 0, children_1 = children; _i < children_1.length; _i++) {
+        var child = children_1[_i];
+        if (typeof child === "boolean" || typeof child === "function")
+            continue;
+        if (child === null || child === undefined)
+            continue;
+        if (Array.isArray(child)) {
+            appendChildren(parent, child);
+            continue;
+        }
+        try {
+            parent.appendChild(typeof child === "object"
+                ? child
+                : child !== "" && document.createTextNode(String(child)));
+        }
+        catch (err) {
+            console.error(err);
+        }
+    }
+}
+function elemArgs(args) {
+    var _a = typeof args[0] === "string" ? [args[0], ""] : [args[0].tag, args[0].id], tag = _a[0], id = _a[1];
+    var attributes = {};
+    var children = [];
+    if (args[1]) {
+        if (typeof args[1] === "string" || typeof args[1] === "number")
+            children = [args[1]];
+        else if (Array.isArray(args[1]))
+            children = args[1];
+        else if (args[1])
+            attributes = args[1];
+    }
+    if (args.length >= 3) {
+        children = args.slice(2);
+    }
+    else {
+        if (Array.isArray(attributes.children))
+            children = attributes.children;
+    }
+    if ("children" in attributes) {
+        var _ = attributes.children, rest = __rest(attributes, ["children"]);
+        attributes = rest;
+    }
+    if (id)
+        attributes = __assign(__assign({}, attributes), { id: id });
+    return [tag, attributes, children];
+}
+function elem() {
+    var args = [];
+    for (var _i = 0; _i < arguments.length; _i++) {
+        args[_i] = arguments[_i];
+    }
+    try {
+        if (isComponent(args[0]))
+            return getComponent(args);
+        var _a = elemArgs(args), tag = _a[0], attributes = _a[1], children = _a[2];
+        var el = createElem(tag, attributes);
+        appendChildren(el, children);
+        return el;
+    }
+    catch (e) {
+        console.error(e);
+        return "";
+    }
+}
+var getStyleSheet = (function () {
+    var styleElement;
+    return function getStyleSheet() {
+        if (!styleElement) {
+            styleElement = document.createElement("style");
+            document.head.appendChild(styleElement);
+        }
+        if (!styleElement.sheet)
+            throw new Error("Unable to add style rule.");
+        return styleElement.sheet;
+    };
+})();
+function initRule(sheet, selector, content) {
+    var index = sheet.cssRules.length;
+    sheet.insertRule(selector + (content ? " { content: \"".concat(content, "\"; }") : " {}"), index);
+    var rule = sheet.cssRules.item(index);
+    return rule;
+}
+function style(selector, properties) {
+    try {
+        var rule = initRule(getStyleSheet(), selector, properties.content);
+        setInlineStyle(rule, properties);
+        return rule;
+    }
+    catch (e) {
+        console.error(e);
+        return null;
+    }
+}
+function media(condition, styleRules) {
+    try {
+        var mediaRule = initRule(getStyleSheet(), "@media ".concat(condition));
+        try {
+            for (var selector in styleRules) {
+                var properties = styleRules[selector];
+                var rule = initRule(mediaRule, selector, properties.content);
+                setInlineStyle(rule, properties);
+            }
+        }
+        catch (e) {
+            console.error(e);
+        }
+        return mediaRule;
+    }
+    catch (e) {
+        console.error(e);
+        return null;
+    }
+}
+function assertElement(el, tag) {
+    if (!el)
+        throw new ReferenceError("Element not found.");
+    if (tag && el.tagName.toLowerCase() !== tag)
+        throw new TypeError("tag parameter and element's tag do not match.");
+    return el;
+}
+function queryElem(selector, tag) {
+    var el = document.querySelector(selector);
+    return assertElement(el, tag);
+}
+function getElem(id, tag) {
+    var el = document.getElementById(id);
+    return assertElement(el, tag);
+}
+function getChild(id, tag) {
+    var _a;
+    var el = (_a = document.getElementById(id)) === null || _a === void 0 ? void 0 : _a.firstElementChild;
+    return assertElement(el, tag);
+}
+function getParent(id, tag) {
+    var _a;
+    var el = (_a = document.getElementById(id)) === null || _a === void 0 ? void 0 : _a.parentElement;
+    return assertElement(el, tag);
+}
+var refElem = (function () {
+    var refCount = 0;
+    return function refElem(tag) {
+        var id = "e" + (refCount++).toString(36);
+        var ref = function () {
+            return getElem(id, tag);
+        };
+        ref.id = id;
+        ref.tag = tag;
+        ref.selector = tag + "#" + id;
+        ref.toString = function () {
+            return this.selector;
+        };
+        return Object.freeze(ref);
+    };
+})();
+function isRef(value) {
+    return (Object.isFrozen(value) &&
+        "selector" in value &&
+        value.selector === String(value));
+}
+function isComponent(value) {
+    return typeof value === "function" && !isRef(value);
+}
+function getComponent(args) {
+    try {
+        // this is for jsx compatibility
+        return args[0](__assign({ children: args.slice(2) }, args[1]));
+    }
+    catch (err) {
+        console.error(err);
+        return;
+    }
+}
+var thisModule = Object.freeze({
+    elem: elem,
+    style: style,
+    media: media,
+    getElem: getElem,
+    queryElem: queryElem,
+    getChild: getChild,
+    getParent: getParent,
+    refElem: refElem,
+    version: "0.9.1",
+});
+Object.defineProperty(window, "iuai", {
+    value: thisModule,
+    enumerable: true,
+});
+// this is for jsx compatibility
+"React" in window ||
+    Object.defineProperty(window, "React", {
+        value: { createElement: elem, Fragment: "" },
+        enumerable: true,
+    });
+})()

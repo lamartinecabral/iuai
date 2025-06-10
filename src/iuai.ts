@@ -97,6 +97,11 @@ function elemArgs<T extends Tags>(args: any[]) {
   } else {
     if (Array.isArray(attributes.children)) children = attributes.children;
   }
+
+  if ("children" in attributes) {
+    const { children: _, ...rest } = attributes;
+    attributes = rest as typeof attributes;
+  }
   if (id) attributes = { ...attributes, id };
 
   return [tag, attributes, children] as const;
@@ -134,7 +139,7 @@ function elem(...args: any[]) {
 
 const getStyleSheet = (() => {
   let styleElement: HTMLStyleElement;
-  return () => {
+  return function getStyleSheet() {
     if (!styleElement) {
       styleElement = document.createElement("style");
       document.head.appendChild(styleElement);
@@ -243,7 +248,7 @@ function getParent<T extends Tags>(
 
 const refElem = (() => {
   let refCount = 0;
-  return <T extends Tags>(tag: T) => {
+  return function refElem<T extends Tags>(tag: T) {
     const id = "e" + (refCount++).toString(36);
     const ref = function () {
       return getElem(id, tag) as Elem<T>;
@@ -292,22 +297,21 @@ const thisModule = Object.freeze({
   getChild,
   getParent,
   refElem,
+  version: "__version__" as string,
 });
 
 declare global {
   var iuai: typeof thisModule;
 }
 
-const _global = (typeof self !== "undefined" && self) || globalThis;
-
-Object.defineProperty(_global, "iuai", {
+Object.defineProperty(window, "iuai", {
   value: thisModule,
   enumerable: true,
 });
 
 // this is for jsx compatibility
-"React" in _global ||
-  Object.defineProperty(_global, "React", {
+"React" in window ||
+  Object.defineProperty(window, "React", {
     value: { createElement: elem, Fragment: "" },
     enumerable: true,
   });

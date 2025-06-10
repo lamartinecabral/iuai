@@ -44,6 +44,7 @@ declare const thisModule: Readonly<{
         selector: string;
         toString(): string;
     };
+    version: string;
 }>;
 declare global {
     var iuai: typeof thisModule;
