@@ -5,13 +5,16 @@ type DeepPartial<T extends object> = T extends Function | Array<unknown>
   : {
       [K in keyof T]?: T[K] extends object ? DeepPartial<T[K]> : T[K];
     };
+type PickByType<T, U> = { [P in keyof T as T[P] extends U ? P : never]: T[P] };
 type ElemAttributes<T extends Tags> = DeepPartial<Elem<T>>;
 type ElemText = string | number;
 type ElemChildren = Array<HTMLElement | ElemText>;
 type TagObj<T extends Tags> = { tag: T; id?: string };
 type TagLike<T extends Tags> = T | TagObj<T>;
 type Stringable = { toString: () => string };
-type StyleProps = Partial<CSSStyleDeclaration> & { [property: string]: string };
+type StyleProps = Partial<PickByType<CSSStyleDeclaration, string>> & {
+  [property: string]: string;
+};
 
 function setInlineStyle<T extends HTMLElement | CSSStyleRule>(
   element: T,
