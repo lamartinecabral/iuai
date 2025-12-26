@@ -33,7 +33,7 @@ function setInlineStyle(element, style) {
                 if (prop in element.style && !important)
                     element.style[prop] = value;
                 else
-                    element.style.setProperty(prop, value, important);
+                    element.style.setProperty(prop in element.style ? kebab(prop) : prop, value, important);
             }
             catch (e) {
                 console.error(e);
@@ -242,6 +242,13 @@ function getComponent(args) {
         return;
     }
 }
+function kebab(name) {
+    if (name.indexOf("-") !== -1)
+        return name;
+    return name.replace(/([A-Z])/g, function (a) {
+        return "-" + a.toLowerCase();
+    });
+}
 var thisModule = Object.freeze({
     elem: elem,
     style: style,
@@ -251,7 +258,7 @@ var thisModule = Object.freeze({
     getChild: getChild,
     getParent: getParent,
     refElem: refElem,
-    version: "0.9.1",
+    version: "0.9.2",
 });
 Object.defineProperty(window, "iuai", {
     value: thisModule,

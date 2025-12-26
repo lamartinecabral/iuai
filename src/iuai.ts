@@ -30,7 +30,12 @@ function setInlineStyle<T extends HTMLElement | CSSStyleRule>(
         const important = value === style[prop] ? "" : "important";
         if (prop in element.style && !important)
           element.style[prop as any] = value;
-        else element.style.setProperty(prop, value, important);
+        else
+          element.style.setProperty(
+            prop in element.style ? kebab(prop) : prop,
+            value,
+            important
+          );
       } catch (e) {
         console.error(e);
       }
@@ -289,6 +294,13 @@ function getComponent(args: any[]) {
     console.error(err);
     return;
   }
+}
+
+function kebab(name: string) {
+  if (name.indexOf("-") !== -1) return name;
+  return name.replace(/([A-Z])/g, (a) => {
+    return "-" + a.toLowerCase();
+  });
 }
 
 const thisModule = Object.freeze({

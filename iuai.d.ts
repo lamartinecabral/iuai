@@ -3,6 +3,9 @@ type Elem<T extends Tags> = HTMLElementTagNameMap[T];
 type DeepPartial<T extends object> = T extends Function | Array<unknown> ? T : {
     [K in keyof T]?: T[K] extends object ? DeepPartial<T[K]> : T[K];
 };
+type PickByType<T, U> = {
+    [P in keyof T as T[P] extends U ? P : never]: T[P];
+};
 type ElemAttributes<T extends Tags> = DeepPartial<Elem<T>>;
 type ElemText = string | number;
 type ElemChildren = Array<HTMLElement | ElemText>;
@@ -14,7 +17,7 @@ type TagLike<T extends Tags> = T | TagObj<T>;
 type Stringable = {
     toString: () => string;
 };
-type StyleProps = Partial<CSSStyleDeclaration> & {
+type StyleProps = Partial<PickByType<CSSStyleDeclaration, string>> & {
     [property: string]: string;
 };
 declare function elem<T extends Tags>(tag: TagLike<T>): Elem<T>;
