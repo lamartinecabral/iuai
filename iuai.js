@@ -80,9 +80,10 @@ function appendChildren(parent, children) {
             continue;
         }
         try {
-            parent.appendChild(typeof child === "object"
-                ? child
-                : child !== "" && document.createTextNode(String(child)));
+            child !== "" &&
+                parent.appendChild(typeof child === "object"
+                    ? child
+                    : document.createTextNode(String(child)));
         }
         catch (err) {
             console.error(err);
@@ -258,7 +259,7 @@ var thisModule = Object.freeze({
     getChild: getChild,
     getParent: getParent,
     refElem: refElem,
-    version: "0.9.2",
+    version: "0.9.4",
 });
 Object.defineProperty(window, "iuai", {
     value: thisModule,

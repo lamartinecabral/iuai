@@ -78,11 +78,12 @@ function appendChildren(parent: Node, children: any[]) {
       continue;
     }
     try {
-      parent.appendChild(
-        typeof child === "object"
-          ? child
-          : child !== "" && document.createTextNode(String(child))
-      );
+      child !== "" &&
+        parent.appendChild(
+          typeof child === "object"
+            ? child
+            : document.createTextNode(String(child))
+        );
     } catch (err) {
       console.error(err);
     }
