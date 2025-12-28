@@ -149,7 +149,7 @@ var getStyleSheet = (function () {
 })();
 function initRule(sheet, selector, content) {
     var index = sheet.cssRules.length;
-    sheet.insertRule(selector + (content ? " { content: \"".concat(content, "\"; }") : " {}"), index);
+    sheet.insertRule(selector + (content ? " { content: ".concat(content, "; }") : " {}"), index);
     var rule = sheet.cssRules.item(index);
     return rule;
 }
@@ -259,7 +259,7 @@ var thisModule = Object.freeze({
     getChild: getChild,
     getParent: getParent,
     refElem: refElem,
-    version: "0.9.4",
+    version: "0.9.5",
 });
 Object.defineProperty(window, "iuai", {
     value: thisModule,
